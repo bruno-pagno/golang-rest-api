@@ -1,8 +1,19 @@
 package main
 
 import (
+	"database/sql"
+	"fmt"
 	"github.com/gin-gonic/gin"
+	_ "github.com/lib/pq"
 	"net/http"
+)
+
+const (
+	host     = "host.docker.internal"
+	port     = 5432
+	user     = "postgres"
+	password = "postgres"
+	dbname   = "postgres"
 )
 
 type dog struct {
@@ -19,6 +30,22 @@ var dogs = []dog{
 }
 
 func main() {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"password=%s dbname=%s sslmode=disable",
+		host, port, user, password, dbname)
+
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		panic(err)
+	}
+	defer db.Close()
+
+	err = db.Ping()
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("Connected to the database")
+	
 	router := gin.Default()
 	router.GET("/dogs", get)
 	router.GET("/dogs/:id", getById)
