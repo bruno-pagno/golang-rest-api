@@ -24,7 +24,7 @@ func main() {
 	router.GET("/dogs/:id", getById)
 	router.POST("/dogs", post)
 
-	router.Run("localhost:8080")
+	router.Run(":8080")
 }
 
 func get(c *gin.Context) {
